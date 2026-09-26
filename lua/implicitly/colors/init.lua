@@ -23,7 +23,7 @@ function M.setup(opts)
 
   colors.git.ignore = colors.dark3
   colors.black = Util.blend_bg(colors.bg, 0.8, "#000000")
-  colors.border_highlight = colors.seed_purple
+  colors.border_highlight = colors.accent
   colors.border = colors.black
 
   -- Popups and statusline always get a dark background
@@ -39,20 +39,16 @@ function M.setup(opts)
     or opts.styles.floats == "dark" and colors.bg_dark
     or colors.bg
 
-  -- the two dark seeds carry the selection surfaces
-  colors.bg_visual = colors.seed_indigo
-  colors.bg_search = colors.seed_purple
+  -- bg_visual and bg_search come straight from ayu (selection, findMatch)
   colors.fg_sidebar = colors.fg_dark
   colors.fg_float = colors.fg
 
-  colors.error = colors.red
   colors.todo = colors.cyan
-  colors.warning = colors.orange
+  colors.warning = colors.accent
   colors.info = colors.blue
   colors.hint = colors.teal
 
   colors.rainbow = {
-    colors.pink,
     colors.orange,
     colors.yellow,
     colors.green,
@@ -60,6 +56,7 @@ function M.setup(opts)
     colors.blue,
     colors.purple,
     colors.magenta,
+    colors.peach,
   }
 
   -- stylua: ignore
@@ -75,8 +72,8 @@ function M.setup(opts)
     yellow_bright  = Util.brighten(colors.yellow),
     blue           = colors.blue,
     blue_bright    = Util.brighten(colors.blue),
-    magenta        = colors.pink,
-    magenta_bright = Util.brighten(colors.pink),
+    magenta        = colors.purple,
+    magenta_bright = Util.brighten(colors.purple),
     cyan           = colors.cyan,
     cyan_bright    = Util.brighten(colors.cyan),
     white          = colors.fg_dark,

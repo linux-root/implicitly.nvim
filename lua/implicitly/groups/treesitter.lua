@@ -22,7 +22,7 @@ function M.get(c, opts)
     ["@constant"]                   = "Constant",
     ["@constant.builtin"]           = "Special",
     ["@constant.macro"]             = "Define",
-    ["@constructor"]                = { fg = c.magenta }, -- For constructor calls and definitions: `= { }` in Lua, and Java constructors.
+    ["@constructor"]                = { fg = c.blue }, -- For constructor calls and definitions: `= { }` in Lua, and Java constructors.
     ["@constructor.tsx"]            = { fg = c.blue1 },
     ["@diff.delta"]                 = "DiffChange",
     ["@diff.minus"]                 = "DiffDelete",
@@ -33,14 +33,14 @@ function M.get(c, opts)
     ["@function.macro"]             = "Macro",
     ["@function.method"]            = "Function",
     ["@function.method.call"]       = "@function.method",
-    ["@keyword"]                    = { fg = c.pink, style = opts.styles.keywords }, -- For keywords that don't fall in previous categories.
+    ["@keyword"]                    = { fg = c.orange, style = opts.styles.keywords }, -- For keywords that don't fall in previous categories.
     ["@keyword.conditional"]        = "Conditional",
     ["@keyword.coroutine"]          = "@keyword",
     ["@keyword.debug"]              = "Debug",
     ["@keyword.directive"]          = "PreProc",
     ["@keyword.directive.define"]   = "Define",
     ["@keyword.exception"]          = "Exception",
-    ["@keyword.function"]           = { fg = c.magenta, style = opts.styles.functions }, -- For keywords used to define a function.
+    ["@keyword.function"]           = { fg = c.orange, style = opts.styles.functions }, -- For keywords used to define a function.
     ["@keyword.import"]             = "Include",
     ["@keyword.operator"]           = "@operator",
     ["@keyword.repeat"]             = "Repeat",
@@ -73,15 +73,15 @@ function M.get(c, opts)
     ["@none"]                       = {},
     ["@number"]                     = "Number",
     ["@number.float"]               = "Float",
-    ["@operator"]                   = { fg = c.blue5 }, -- For any operator: `+`, but also `->` and `*` in C.
-    ["@property"]                   = { fg = c.green1 },
+    ["@operator"]                   = { fg = c.magenta }, -- For any operator: `+`, but also `->` and `*` in C.
+    ["@property"]                   = { fg = c.fg },
     ["@punctuation.bracket"]        = { fg = c.fg_dark }, -- For brackets and parens.
-    ["@punctuation.delimiter"]      = { fg = c.blue5 }, -- For delimiters ie: `.`
-    ["@punctuation.special"]        = { fg = c.blue5 }, -- For special symbols (e.g. `{}` in string interpolation)
+    ["@punctuation.delimiter"]      = { fg = c.dark5 }, -- For delimiters ie: `.`
+    ["@punctuation.special"]        = { fg = c.magenta }, -- For special symbols (e.g. `{}` in string interpolation)
     ["@punctuation.special.markdown"] = { fg = c.orange }, -- For special symbols (e.g. `{}` in string interpolation)
     ["@string"]                     = "String",
     ["@string.documentation"]       = { fg = c.yellow },
-    ["@string.escape"]              = { fg = c.magenta }, -- For escape characters within a string.
+    ["@string.escape"]              = { fg = c.peach }, -- For escape characters within a string.
     ["@string.regexp"]              = { fg = c.blue6 }, -- For regexes.
     ["@tag"]                        = "Label",
     ["@tag.attribute"]              = "@property",
@@ -95,8 +95,8 @@ function M.get(c, opts)
     ["@type.qualifier"]             = "@keyword",
     ["@variable"]                   = { fg = c.fg, style = opts.styles.variables }, -- Any variable name that does not have another highlight.
     ["@variable.builtin"]           = { fg = c.red }, -- Variable names that are defined by the languages, like `this` or `self`.
-    ["@variable.member"]            = { fg = c.green1 }, -- For fields.
-    ["@variable.parameter"]         = { fg = c.yellow }, -- For parameters of a function.
+    ["@variable.member"]            = { fg = c.fg }, -- For fields.
+    ["@variable.parameter"]         = { fg = c.fg_dark }, -- For parameters of a function.
     ["@variable.parameter.builtin"] = { fg = Util.blend_fg(c.yellow, 0.8) }, -- For builtin parameters of a function, e.g. "..." or Smali's p[1-99]
   }
 

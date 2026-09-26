@@ -25,8 +25,8 @@ function M.get(c, opts)
     MetalsWorksheet           = { fg = c.teal, bg = c.bg_highlight, italic = true },
 
     -- :MetalsDoctor and the tree view use the float/sidebar palette.
-    MetalsDoctorHeading       = { fg = c.purple, bold = true },
-    MetalsDoctorSubHeading    = { fg = c.blue1 },
+    MetalsDoctorHeading       = { fg = c.accent, bold = true },
+    MetalsDoctorSubHeading    = { fg = c.blue },
     MetalsDoctorError         = { fg = c.error },
     MetalsDoctorWarning       = { fg = c.warning },
     MetalsDoctorSuccess       = { fg = c.green },
