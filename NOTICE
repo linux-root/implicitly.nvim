@@ -1,0 +1,10 @@
+implicitly.nvim
+Copyright 2026 linux-root
+
+This product includes software developed as part of tokyonight.nvim
+(https://github.com/folke/tokyonight.nvim), Copyright folke, licensed under
+the Apache License, Version 2.0.
+
+The plugin structure, highlight-group modules and color utilities are derived
+from that work. The palette, the Scala and Metals highlight groups, and the
+palette generator are original to this project.
