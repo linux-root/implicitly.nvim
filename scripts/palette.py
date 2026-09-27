@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build lua/implicitly/palette.lua from ayu dark.
+"""Build the palette files under lua/implicitly/palette/.
 
 The ayu values are literal and canonical -- they come from
 https://github.com/ayu-theme/ayu-colors (themes/dark.yaml) and are the hexes
@@ -11,9 +11,16 @@ equivalent for -- intermediate greys, the dim variants, and the diff surfaces.
 Those are computed in OKLCH so they sit on the same perceptual ramp as the
 values around them rather than being eyeballed.
 
-    python3 scripts/palette.py --write    # regenerate lua/implicitly/palette.lua
+Two variants:
+
+  ayu       ayu dark, values verbatim from the upstream theme.
+  phosphor  green on black, the look of a phosphor CRT terminal. The three
+            signature values come from hackertyper.net's own stylesheet:
+            #000000 background, #00FF00 text, #3df7f7 cyan, #ff0000 red.
+
+    python3 scripts/palette.py --write    # regenerate both palette files
     python3 scripts/palette.py --check    # assert the contrast floors
-    python3 scripts/palette.py            # print the table with contrast ratios
+    python3 scripts/palette.py [variant]  # print a table with contrast ratios
 """
 
 import math
@@ -130,7 +137,20 @@ def contrast(a, b):
 
 
 # --- mapping onto the key names the highlight groups use ----------------------
-def build():
+#
+# The key names are hue names inherited from the group files, and they are a
+# poor fit once a second variant exists: after the keyword/constant swap,
+# `purple` is whatever colors keywords and `orange` is whatever colors
+# constants. In the phosphor variant that makes `purple` bright green. Renaming
+# the keys to roles would touch every group file, so the names stay and the
+# role each one plays is spelled out here instead:
+#
+#   purple  keywords        orange  constants, numbers
+#   yellow  functions       blue    types, entities
+#   green   strings         teal    regex
+#   magenta operators       cyan    tags, preprocessor
+#   peach   special chars   accent  warnings, borders
+def build_ayu():
     a = AYU
     bg = a["surface_lift"]
     p = {
@@ -191,6 +211,76 @@ def build():
     return p
 
 
+# --- phosphor ----------------------------------------------------------------
+# hackertyper.net's stylesheet is #000000 background with #00FF00 text, plus a
+# #3df7f7 cyan and a #ff0000 red. Those four are used literally; the rest of the
+# ramp is generated around them at the same hue so the whole screen reads as one
+# phosphor.
+HT_BLACK = "#000000"
+HT_GREEN = "#00FF00"
+HT_CYAN = "#3df7f7"
+HT_RED = "#ff0000"
+PHOSPHOR_HUE = 145
+
+
+def build_phosphor():
+    g = lambda lightness, chroma: oklch(lightness, chroma, PHOSPHOR_HUE)
+    p = {
+        # The editor sits a hair above true black so floats and sidebars have
+        # somewhere darker to go; at this lightness it is black to the eye.
+        "bg": g(0.070, 0.020),
+        "bg_dark": HT_BLACK,
+        "bg_dark1": HT_BLACK,
+        "bg_highlight": g(0.200, 0.050),
+        "fg": g(0.800, 0.150),
+        "fg_dark": g(0.700, 0.120),
+        "fg_gutter": g(0.270, 0.060),
+        "comment": g(0.480, 0.090),
+        "dark3": g(0.380, 0.080),
+        "dark5": g(0.600, 0.105),
+        "terminal_black": g(0.330, 0.070),
+
+        # Strings and constants are both frequent, so constants get a genuinely
+        # different hue (amber) rather than another point on the green ramp --
+        # two greens separated only by chroma read as the same color.
+        "purple": HT_GREEN,                   # keywords -- the signature color
+        "green": g(0.900, 0.120),             # strings
+        "orange": oklch(0.840, 0.160, 88),    # constants, numbers
+        "yellow": oklch(0.880, 0.170, 120),   # functions
+        "blue": HT_CYAN,                      # types
+        "peach": g(0.940, 0.070),             # special chars -- near-white green
+        "teal": oklch(0.730, 0.100, 168),
+        "magenta": oklch(0.800, 0.120, 195),  # operators
+        "cyan": oklch(0.870, 0.100, 218),     # tags
+        "accent": oklch(0.780, 0.150, 70),    # warnings, borders -- the one warm hue
+        "red": oklch(0.680, 0.170, 25),       # markup; `error` keeps the literal #ff0000
+
+        "blue1": HT_CYAN,
+        "blue5": oklch(0.880, 0.090, 195),
+        "blue6": oklch(0.930, 0.070, 180),
+        "blue7": oklch(0.330, 0.070, 200),
+        "green1": g(0.860, 0.130),
+        "green2": g(0.620, 0.110),
+        "red1": HT_RED,
+        "magenta2": oklch(0.700, 0.140, 185),
+
+        "git_add": g(0.720, 0.160),
+        "git_change": oklch(0.740, 0.110, 200),
+        "git_delete": oklch(0.640, 0.190, 25),
+
+        "bg_visual": g(0.250, 0.070),
+        "bg_search": oklch(0.320, 0.090, 110),
+        "error": HT_RED,
+    }
+    for key, src_hue in (("diff_add", PHOSPHOR_HUE), ("diff_change", 200), ("diff_delete", 25)):
+        p[key] = oklch(0.260, 0.075, src_hue)
+    p["diff_text"] = oklch(0.360, 0.080, 200)
+    return p
+
+
+VARIANTS = {"ayu": build_ayu, "phosphor": build_phosphor}
+
+
 # Floors, calibrated to what ayu actually is -- ayu runs a lower-contrast
 # comment than most themes and that is the look, so the floor sits just under
 # its real value rather than pushing it brighter.
@@ -201,8 +291,35 @@ ACCENTS = ["red", "orange", "yellow", "green", "teal", "cyan", "blue",
            "purple", "magenta", "peach", "accent"]
 
 
+# Two syntax roles that land on nearly the same color are a bug you only notice
+# after staring at a buffer for an hour. The floor sits just under ayu's own
+# worst pair (constant vs operator, 0.039) -- upstream ayu is canonical and not
+# ours to fail, but anything tighter than that is our own mistake.
+MIN_ROLE_DISTANCE = 0.035
+ROLE_KEYS = ["purple", "orange", "yellow", "blue", "green", "teal",
+             "magenta", "cyan", "peach", "accent", "red"]
+
+
+def _oklab(hex_value):
+    lightness, chroma, hue = hex_to_oklch(hex_value)
+    rad = math.radians(hue)
+    return (lightness, chroma * math.cos(rad), chroma * math.sin(rad))
+
+
+def role_distances(p):
+    out = []
+    for i, a in enumerate(ROLE_KEYS):
+        for b in ROLE_KEYS[i + 1:]:
+            pa, pb = _oklab(p[a]), _oklab(p[b])
+            out.append((math.dist(pa, pb), a, b))
+    return sorted(out)
+
+
 def check(p):
     bad = []
+    for gap, a, b in role_distances(p):
+        if gap < MIN_ROLE_DISTANCE:
+            bad.append(f"{a} {p[a]} and {b} {p[b]} are near-identical (gap {gap:.3f})")
     for key, floor in {**FLOORS, **{k: ACCENT_FLOOR for k in ACCENTS}}.items():
         got = contrast(p[key], p["bg"])
         if got < floor:
@@ -219,7 +336,7 @@ def check(p):
     return bad
 
 
-LUA_PATH = "lua/implicitly/palette.lua"
+LUA_DIR = "lua/implicitly/palette"
 
 LAYOUT = [
     ("bg", "ayu surface.lift -- editor"),
@@ -244,7 +361,8 @@ LAYOUT = [
     ("diff_add", None), ("diff_change", None), ("diff_delete", None), ("diff_text", None),
 ]
 
-HEADER = """-- Generated by scripts/palette.py -- run `python3 scripts/palette.py --write`
+HEADERS = {
+    "ayu": """-- Generated by scripts/palette.py -- run `python3 scripts/palette.py --write`
 -- to regenerate. Don't hand-edit; edit the generator.
 --
 -- ayu dark, from https://github.com/ayu-theme/ayu-colors (themes/dark.yaml).
@@ -260,10 +378,26 @@ HEADER = """-- Generated by scripts/palette.py -- run `python3 scripts/palette.p
 
 ---@class Palette
 local M = {
-"""
+""",
+    "phosphor": """-- Generated by scripts/palette.py -- run `python3 scripts/palette.py --write`
+-- to regenerate. Don't hand-edit; edit the generator.
+--
+-- Green on black, the look of a phosphor CRT terminal. Four values are taken
+-- literally from hackertyper.net's stylesheet -- #000000 background, #00FF00
+-- text, #3df7f7 cyan, #ff0000 red -- and the rest of the ramp is generated
+-- around them at the same hue so the screen reads as one phosphor.
+--
+-- The key names are hue names and they lie here: `purple` is the bright green
+-- that colors keywords, `orange` is the lime on constants. See the role table
+-- in scripts/palette.py.
+
+---@class Palette
+local M = {
+""",
+}
 
 
-def to_lua(p):
+def to_lua(p, variant):
     lines = []
     for key, note in LAYOUT:
         if key is None:
@@ -271,7 +405,7 @@ def to_lua(p):
             continue
         entry = f'  {key} = "{p[key]}",'
         lines.append(f"{entry:<28}-- {note}" if note else entry)
-    return HEADER + "\n".join(lines) + f'''
+    return HEADERS[variant] + "\n".join(lines) + f'''
 
   git = {{
     add = "{p["git_add"]}",
@@ -285,21 +419,37 @@ return M
 
 
 if __name__ == "__main__":
-    palette = build()
-    failures = check(palette)
+    args = [a for a in sys.argv[1:] if not a.startswith("-")]
+    names = args or list(VARIANTS)
+
+    failures = {n: check(VARIANTS[n]()) for n in names}
     if "--check" in sys.argv or "--write" in sys.argv:
-        for f in failures:
-            print("FAIL", f)
-        if failures:
+        for name, bad in failures.items():
+            for f in bad:
+                print(f"FAIL [{name}] {f}")
+        if any(failures.values()):
             sys.exit(1)
+
     if "--write" in sys.argv:
-        with open(LUA_PATH, "w") as fh:
-            fh.write(to_lua(palette))
-        print(f"wrote {LUA_PATH}")
+        for name in names:
+            path = f"{LUA_DIR}/{name}.lua"
+            with open(path, "w") as fh:
+                fh.write(to_lua(VARIANTS[name](), name))
+            print(f"wrote {path}")
         sys.exit(0)
+
     if "--check" in sys.argv:
-        print(f"ok: {len(FLOORS) + len(ACCENTS)} contrast floors met (bg {palette['bg']})")
+        for name in names:
+            palette = VARIANTS[name]()
+            n = len(FLOORS) + len(ACCENTS)
+            gap, a, b = role_distances(palette)[0]
+            print(f"ok [{name}]: {n} contrast floors met (bg {palette['bg']}); "
+                  f"closest roles {a}/{b} gap {gap:.3f}")
         sys.exit(0)
-    width = max(len(k) for k in palette)
-    for key in sorted(palette):
-        print(f"{key:<{width}}  {palette[key]}  cr={contrast(palette[key], palette['bg']):5.2f}")
+
+    for name in names:
+        palette = VARIANTS[name]()
+        print(f"--- {name}")
+        width = max(len(k) for k in palette)
+        for key in sorted(palette):
+            print(f"  {key:<{width}}  {palette[key]}  cr={contrast(palette[key], palette['bg']):5.2f}")

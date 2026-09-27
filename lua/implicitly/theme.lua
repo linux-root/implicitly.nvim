@@ -13,7 +13,7 @@ function M.setup(opts)
   end
 
   vim.o.termguicolors = true
-  vim.g.colors_name = "implicitly"
+  vim.g.colors_name = "implicitly-" .. opts.style
 
   for group, hl in pairs(groups) do
     hl = type(hl) == "string" and { link = hl } or hl

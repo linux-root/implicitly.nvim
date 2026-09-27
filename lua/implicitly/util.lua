@@ -141,7 +141,9 @@ function M.cache.write(key, data)
 end
 
 function M.cache.clear()
-  uv.fs_unlink(M.cache.file("implicitly"))
+  for _, style in ipairs(require("implicitly.colors").styles) do
+    uv.fs_unlink(M.cache.file(style))
+  end
 end
 
 return M

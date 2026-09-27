@@ -2,12 +2,21 @@ local Util = require("implicitly.util")
 
 local M = {}
 
+---@type string[]
+M.styles = { "phosphor", "ayu" }
+
 ---@param opts? implicitly.Config
 function M.setup(opts)
   opts = require("implicitly.config").extend(opts)
 
+  local ok, palette = pcall(Util.mod, "implicitly.palette." .. opts.style)
+  if not ok then
+    error(("implicitly: unknown style %q (expected one of: %s)")
+      :format(opts.style, table.concat(M.styles, ", ")))
+  end
+
   ---@class ColorScheme: Palette
-  local colors = vim.deepcopy(Util.mod("implicitly.palette"))
+  local colors = vim.deepcopy(palette)
 
   Util.bg = colors.bg
   Util.fg = colors.fg

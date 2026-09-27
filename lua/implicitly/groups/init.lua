@@ -37,7 +37,8 @@ me = vim.fn.fnamemodify(me, ":h")
 local function source_stamp()
   local uv = vim.uv or vim.loop
   local newest = 0
-  for _, dir in ipairs({ me, vim.fn.fnamemodify(me, ":h") }) do
+  local root = vim.fn.fnamemodify(me, ":h")
+  for _, dir in ipairs({ me, root, root .. "/palette", root .. "/colors" }) do
     for _, file in ipairs(vim.fn.glob(dir .. "/*.lua", false, true)) do
       local stat = uv.fs_stat(file)
       newest = math.max(newest, stat and stat.mtime.sec or 0)
@@ -97,7 +98,7 @@ function M.setup(colors, opts)
   local names = vim.tbl_keys(groups)
   table.sort(names)
 
-  local cache_key = "implicitly"
+  local cache_key = opts.style
   local cache = opts.cache and Util.cache.read(cache_key)
 
   local inputs = {
