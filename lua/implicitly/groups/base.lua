@@ -77,18 +77,18 @@ function M.get(c, opts)
 
     Bold                        = { bold = true, fg = c.fg }, -- (preferred) any bold text
     Character                   = { fg = c.green }, --  a character constant: 'c', '\n'
-    Constant                    = { fg = c.purple }, -- (preferred) any constant
-    Debug                       = { fg = c.orange }, --    debugging statements
+    Constant                    = { fg = c.orange }, -- (preferred) any constant
+    Debug                       = { fg = c.purple }, --    debugging statements
     Delimiter                   =  "Special", --  character that needs attention
     Error                       = { fg = c.error }, -- (preferred) any erroneous construct
     Function                    = { fg = c.yellow, style = opts.styles.functions }, -- function name (also: methods for classes)
     Identifier                  = { fg = c.fg, style = opts.styles.variables }, -- (preferred) any variable name
     Italic                      = { italic = true, fg = c.fg }, -- (preferred) any italic text
-    Keyword                     = { fg = c.orange, style = opts.styles.keywords }, --  any other keyword
+    Keyword                     = { fg = c.purple, style = opts.styles.keywords }, --  any other keyword
     Operator                    = { fg = c.magenta }, -- "sizeof", "+", "*", etc.
     PreProc                     = { fg = c.cyan }, -- (preferred) generic Preprocessor
     Special                     = { fg = c.peach }, -- (preferred) any special symbol
-    Statement                   = { fg = c.orange }, -- (preferred) any statement
+    Statement                   = { fg = c.purple }, -- (preferred) any statement
     String                      = { fg = c.green }, --   a string constant: "this is a string"
     Todo                        = { bg = c.yellow, fg = c.bg }, -- (preferred) anything that needs extra attention; mostly the keywords TODO FIXME and XXX
     Type                        = { fg = c.blue }, -- (preferred) int, long, char, etc.

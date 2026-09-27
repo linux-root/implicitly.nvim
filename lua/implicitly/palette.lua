@@ -4,6 +4,13 @@
 -- ayu dark, from https://github.com/ayu-theme/ayu-colors (themes/dark.yaml).
 -- The ayu values are verbatim; the rest are derived to fill keys the highlight
 -- groups need and ayu has no equivalent for.
+--
+-- One deliberate departure: ayu's keyword orange and constant purple are
+-- swapped. Six of ayu's eleven accents sit inside a 63-degree warm band, with
+-- keyword only 6 degrees from operator and 18 from func. Keywords are the most
+-- frequent token, so that band ends up dominating the screen. Purple sits 69
+-- degrees clear of anything else; constants are rare enough that the orange
+-- stays pleasant there. The key names below are the ayu hex they came from.
 
 ---@class Palette
 local M = {
@@ -19,13 +26,13 @@ local M = {
   dark5 = "#778096",
   terminal_black = "#353d50",
 
-  orange = "#FF8F40",       -- ayu keyword
+  orange = "#FF8F40",       -- ayu keyword hex -- used here for constants, see below
   yellow = "#FFB454",       -- ayu func
   blue = "#59C2FF",         -- ayu entity
   green = "#AAD94C",        -- ayu string
   teal = "#95E6CB",         -- ayu regexp
   red = "#F07178",          -- ayu markup
-  purple = "#D2A6FF",       -- ayu constant
+  purple = "#D2A6FF",       -- ayu constant hex -- used here for keywords
   magenta = "#F29668",      -- ayu operator
   cyan = "#39BAE6",         -- ayu tag
   peach = "#E6C08A",        -- ayu special

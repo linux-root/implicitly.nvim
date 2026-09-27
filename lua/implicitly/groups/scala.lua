@@ -4,7 +4,7 @@ M.url = "https://github.com/tree-sitter/tree-sitter-scala"
 
 -- Only what the generic mapping gets wrong for Scala.
 --
--- ayu's own role assignments already cover most of it -- keywords orange, types
+-- ayu's own role assignments already cover most of it -- keywords purple, types
 -- blue, operators salmon -- so groups that would merely restate the generic
 -- result are left out rather than written down. What remains is the Scala
 -- grammar disagreeing with the generic mapping (imports, annotations, string
@@ -16,12 +16,12 @@ function M.get(c, opts)
   return {
     -- The grammar routes these through Conditional/Repeat/Exception, which skip
     -- the keyword style; in Scala they are keywords like any other.
-    ["@keyword.conditional.scala"]       = { fg = c.orange, style = opts.styles.keywords },
-    ["@keyword.repeat.scala"]            = { fg = c.orange, style = opts.styles.keywords },
-    ["@keyword.exception.scala"]         = { fg = c.orange, style = opts.styles.keywords },
-    ["@keyword.operator.scala"]          = { fg = c.orange, style = opts.styles.keywords },
+    ["@keyword.conditional.scala"]       = { fg = c.purple, style = opts.styles.keywords },
+    ["@keyword.repeat.scala"]            = { fg = c.purple, style = opts.styles.keywords },
+    ["@keyword.exception.scala"]         = { fg = c.purple, style = opts.styles.keywords },
+    ["@keyword.operator.scala"]          = { fg = c.purple, style = opts.styles.keywords },
     -- `import` is Include -> PreProc, which is the tag color. It is a keyword.
-    ["@keyword.import.scala"]            = { fg = c.orange },
+    ["@keyword.import.scala"]            = { fg = c.purple },
 
     ["@attribute.scala"]                 = { fg = c.peach }, -- @tailrec, @main
     ["@character.special.scala"]         = { fg = c.magenta }, -- the $ in s"$x"
