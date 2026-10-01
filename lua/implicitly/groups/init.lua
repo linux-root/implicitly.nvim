@@ -119,6 +119,13 @@ function M.setup(colors, opts)
         ret[k] = v
       end
     end
+    -- After the merge, not as one more group: pairs() has no order, and these
+    -- have to win over base, treesitter and scala.
+    if opts.style == "jb" then
+      for k, v in pairs(M.get("jb", colors, opts)) do
+        ret[k] = v
+      end
+    end
     Util.resolve(ret)
     if opts.cache then
       Util.cache.write(cache_key, { groups = ret, inputs = inputs })

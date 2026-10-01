@@ -3,7 +3,7 @@ local Util = require("implicitly.util")
 local M = {}
 
 ---@type string[]
-M.styles = { "phosphor", "ayu" }
+M.styles = { "phosphor", "ayu", "jb" }
 
 ---@param opts? implicitly.Config
 function M.setup(opts)
@@ -32,7 +32,7 @@ function M.setup(opts)
 
   colors.git.ignore = colors.dark3
   colors.black = Util.blend_bg(colors.bg, 0.8, "#000000")
-  colors.border_highlight = colors.accent
+  colors.border_highlight = colors.border_highlight or colors.accent -- a palette may set its own
   colors.border = colors.black
 
   -- Popups and statusline always get a dark background

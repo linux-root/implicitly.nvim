@@ -6,7 +6,7 @@ M.version = "1.0.0"
 ---@field on_colors fun(colors: ColorScheme)
 ---@field on_highlights fun(highlights: implicitly.Highlights, colors: ColorScheme)
 M.defaults = {
-  style = "phosphor", -- "phosphor" (green on black) or "ayu"
+  style = "phosphor", -- "phosphor" (green on black), "ayu" or "jb" (JetBrains Dark)
   transparent = false, -- Enable this to disable setting the background color
   terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
   styles = {

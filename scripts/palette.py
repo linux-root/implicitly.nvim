@@ -11,14 +11,15 @@ equivalent for -- intermediate greys, the dim variants, and the diff surfaces.
 Those are computed in OKLCH so they sit on the same perceptual ramp as the
 values around them rather than being eyeballed.
 
-Two variants:
+Three variants:
 
   ayu       ayu dark, values verbatim from the upstream theme.
   phosphor  green on black, the look of a phosphor CRT terminal. The three
             signature values come from hackertyper.net's own stylesheet:
             #000000 background, #00FF00 text, #3df7f7 cyan, #ff0000 red.
+  jb        JetBrains Dark, values verbatim from jb.nvim's IntelliJ snapshot.
 
-    python3 scripts/palette.py --write    # regenerate both palette files
+    python3 scripts/palette.py --write    # regenerate all palette files
     python3 scripts/palette.py --check    # assert the contrast floors
     python3 scripts/palette.py [variant]  # print a table with contrast ratios
 """
@@ -278,7 +279,110 @@ def build_phosphor():
     return p
 
 
-VARIANTS = {"ayu": build_ayu, "phosphor": build_phosphor}
+# --- jb ----------------------------------------------------------------------
+# JetBrains Dark, from the IntelliJ snapshot in
+# https://github.com/nickkadutskyi/jb.nvim (lua/jb/intellij-palette.json, the
+# `dark` entries). Verbatim, keyed by the IntelliJ setting they came from.
+JB = {
+    "default_text_bg": "#191A1C",
+    "default_text_fg": "#BCBEC4",
+    "caret_row": "#1F2024",
+    "line_number": "#4B5059",
+    "line_number_caret": "#A1A3AB",
+    "folded_bg": "#393B40",
+    "folded_fg": "#868A91",
+    "unused_code": "#6F737A",
+    "comment": "#7A7E85",
+    "doc_comment": "#5F826B",
+    "keyword": "#CF8E6D",
+    "string": "#6AAB73",
+    "number": "#2AACB8",
+    "function_decl": "#56A8F5",
+    "field": "#C77DBB",
+    "metadata": "#B3AE60",
+    "type_parameter": "#16BAAC",
+    "template_variable": "#B189F5",
+    "hyperlink": "#548AF7",
+    "completion_match": "#6089EF",
+    "notification_bg": "#25324D",
+    "warning": "#F2C55C",
+    "bad_character": "#F75464",
+    "error_underline": "#FA6675",
+    "selection": "#214283",
+    "text_search": "#114957",
+    "vcs_added": "#549159",
+    "vcs_modified": "#375FAD",
+    "vcs_deleted": "#868A91",
+    "diff_inserted": "#294436",
+    "diff_changed": "#385570",
+    "deleted_text": "#450505",
+}
+
+
+# JetBrains leaves types, operators, calls and punctuation in the default text
+# color. The palette can't express "no color" for a role, so `blue` and
+# `magenta` carry JetBrains' UI hues here and lua/implicitly/groups/jb.lua puts
+# the syntax back to plain text.
+def build_jb():
+    j = JB
+    bg = j["default_text_bg"]
+    p = {
+        "bg": bg,
+        # IntelliJ's tool windows are lighter than the editor; here the
+        # surrounding UI stays darker, like the other variants, so dim_inactive
+        # still dims.
+        "bg_dark": shift(bg, -0.025),
+        "bg_dark1": shift(bg, -0.025),
+        "bg_highlight": j["caret_row"],
+        "fg": j["default_text_fg"],
+        "fg_dark": j["line_number_caret"],
+        "fg_gutter": j["folded_bg"],
+        "comment": j["comment"],
+        "dark3": j["line_number"],
+        "dark5": j["folded_fg"],
+        "terminal_black": j["unused_code"],
+
+        "purple": j["keyword"],
+        "orange": j["field"],              # constants and fields
+        "yellow": j["function_decl"],
+        "blue": j["hyperlink"],
+        "green": j["string"],
+        "cyan": j["number"],
+        "teal": j["type_parameter"],
+        "magenta": j["template_variable"],
+        "peach": j["metadata"],            # annotations
+        "accent": j["warning"],
+        "red": j["bad_character"],
+
+        "blue1": j["completion_match"],
+        "blue5": shift(j["hyperlink"], 0.06),
+        "blue6": shift(j["type_parameter"], 0.05),
+        "blue7": j["notification_bg"],
+        "green1": shift(j["string"], 0.08),
+        "green2": j["doc_comment"],
+        "red1": j["error_underline"],
+        "magenta2": shift(j["template_variable"], -0.14),
+
+        "git_add": j["vcs_added"],
+        "git_change": j["vcs_modified"],
+        "git_delete": j["vcs_deleted"],
+
+        "bg_visual": j["selection"],
+        "bg_search": j["text_search"],
+        "error": j["bad_character"],
+
+        "diff_add": j["diff_inserted"],
+        "diff_change": j["notification_bg"],
+        "diff_text": j["diff_changed"],
+        "diff_delete": j["deleted_text"],
+
+        # Popup borders are grey in the IDE; the warning yellow would be loud.
+        "border_highlight": j["folded_bg"],
+    }
+    return p
+
+
+VARIANTS = {"ayu": build_ayu, "phosphor": build_phosphor, "jb": build_jb}
 
 
 # Floors, calibrated to what ayu actually is -- ayu runs a lower-contrast
@@ -359,6 +463,7 @@ LAYOUT = [
     ("bg_visual", None), ("bg_search", None), ("error", None),
     (None, None),
     ("diff_add", None), ("diff_change", None), ("diff_delete", None), ("diff_text", None),
+    ("border_highlight", None),
 ]
 
 HEADERS = {
@@ -394,6 +499,21 @@ local M = {
 ---@class Palette
 local M = {
 """,
+    "jb": """-- Generated by scripts/palette.py -- run `python3 scripts/palette.py --write`
+-- to regenerate. Don't hand-edit; edit the generator.
+--
+-- JetBrains Dark, from the IntelliJ snapshot in
+-- https://github.com/nickkadutskyi/jb.nvim (lua/jb/intellij-palette.json).
+--
+-- JetBrains leaves types, operators and calls in the default text color, which
+-- a palette can't say. `blue` and `magenta` carry UI hues here, and
+-- lua/implicitly/groups/jb.lua turns the syntax back to plain text. The inline
+-- notes below are the ayu names the keys were laid out for; see the role table
+-- in scripts/palette.py.
+
+---@class Palette
+local M = {
+""",
 }
 
 
@@ -402,6 +522,8 @@ def to_lua(p, variant):
     for key, note in LAYOUT:
         if key is None:
             lines.append("")
+            continue
+        if key not in p:
             continue
         entry = f'  {key} = "{p[key]}",'
         lines.append(f"{entry:<28}-- {note}" if note else entry)

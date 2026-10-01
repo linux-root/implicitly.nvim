@@ -6,6 +6,7 @@ A dark Neovim colorscheme.
 :colorscheme implicitly            -- phosphor
 :colorscheme implicitly-phosphor
 :colorscheme implicitly-ayu
+:colorscheme implicitly-jb
 ```
 
 ```lua
